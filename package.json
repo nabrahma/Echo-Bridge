@@ -1,0 +1,27 @@
+{
+  "name": "echobridge",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently --kill-others --names \"signaling,web\" --prefix-colors \"yellow,cyan\" \"npm run dev --workspace=apps/signaling\" \"npm run dev --workspace=apps/web\"",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:signaling": "npm run dev --workspace=apps/signaling",
+    "build": "npm run build --workspace=packages/shared && npm run build --workspace=apps/web",
+    "build:signaling": "npm run build --workspace=apps/signaling",
+    "typecheck": "npm run typecheck --workspace=packages/shared && npm run typecheck --workspace=apps/web && npm run typecheck --workspace=apps/signaling",
+    "lint": "npm run lint --workspace=apps/web",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\" --ignore-path .gitignore"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
