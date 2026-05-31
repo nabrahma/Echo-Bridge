@@ -16,9 +16,6 @@ interface PlaybackStatusProps {
   audioRef: React.RefObject<HTMLAudioElement>
 }
 
-/**
- * PlaybackStatus — phone-side playback controls and connection status.
- */
 export function PlaybackStatus({
   connectionState,
   playbackState,
@@ -29,12 +26,12 @@ export function PlaybackStatus({
   audioRef,
 }: PlaybackStatusProps) {
   const isConnected = connectionState === 'connected'
-  const isPlaying = playbackState === 'playing'
-  const isBlocked = playbackState === 'blocked'
+  const isPlaying   = playbackState === 'playing'
+  const isBlocked   = playbackState === 'blocked'
 
   return (
-    <NeonCard active={isPlaying} glow={isPlaying} className="flex flex-col items-center text-center gap-6">
-      <NeonCardHeader className="flex-col items-center gap-2 mb-0">
+    <NeonCard active={isPlaying} className="flex flex-col gap-5">
+      <NeonCardHeader>
         <NeonCardTitle>Playback</NeonCardTitle>
         <StatusBadge
           state={isPlaying ? 'listening' : connectionState}
@@ -42,20 +39,20 @@ export function PlaybackStatus({
         />
       </NeonCardHeader>
 
-      {/* Orb visual */}
-      <div className="my-4">
-        <SignalOrb size="md" active={isPlaying} />
+      {/* Connection diagram */}
+      <div className="flex justify-center py-2 border-t border-b border-border">
+        <SignalOrb size="sm" active={isPlaying} />
       </div>
 
-      {/* Hidden audio element — streams remote audio */}
+      {/* Hidden audio element */}
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={audioRef} autoPlay playsInline className="sr-only" />
 
-      {/* Autoplay blocked message */}
+      {/* Autoplay blocked */}
       {isBlocked && (
-        <div className="rounded-sm border border-neon-yellow/30 bg-neon-yellow/5 p-4 w-full">
-          <p className="text-sm text-neon-yellow/80 mb-3">
-            Tap the button below to start audio playback. Your browser requires a user gesture.
+        <div className="space-y-3">
+          <p className="text-xs text-fg-2 leading-relaxed">
+            Your browser requires a tap to start audio.
           </p>
           <Button
             variant="primary"
@@ -63,21 +60,20 @@ export function PlaybackStatus({
             onClick={onPlay}
             id="play-audio-btn"
             className="w-full"
-            aria-label="Start audio playback"
           >
-            <Play className="h-4 w-4" aria-hidden="true" />
+            <Play className="h-4 w-4" />
             Tap to Play
           </Button>
         </div>
       )}
 
-      {/* Not connected state */}
+      {/* Not connected */}
       {!isConnected && !isBlocked && (
-        <div className="w-full space-y-3">
-          <p className="text-sm text-foreground/50">
+        <div className="space-y-3">
+          <p className="text-sm text-fg-2">
             {connectionState === 'connecting' || connectionState === 'reconnecting'
-              ? 'Connecting to broadcaster...'
-              : 'Waiting for audio stream...'}
+              ? 'Connecting to broadcaster…'
+              : 'Waiting for audio stream…'}
           </p>
           {(connectionState === 'disconnected' || connectionState === 'error') && (
             <Button
@@ -86,19 +82,18 @@ export function PlaybackStatus({
               onClick={onReconnect}
               id="reconnect-btn"
               className="w-full"
-              aria-label="Retry connection"
             >
-              <RefreshCw className="h-4 w-4" aria-hidden="true" />
-              Retry Connection
+              <RefreshCw className="h-4 w-4" />
+              Retry
             </Button>
           )}
         </div>
       )}
 
-      {/* Volume control */}
+      {/* Volume */}
       {(isPlaying || isBlocked) && (
-        <div className="w-full flex items-center gap-3">
-          <Volume2 className="h-4 w-4 text-foreground/40 flex-shrink-0" aria-hidden="true" />
+        <div className="flex items-center gap-3">
+          <Volume2 className="h-4 w-4 text-fg-3 flex-shrink-0" aria-hidden="true" />
           <input
             type="range"
             min={0}
@@ -106,10 +101,10 @@ export function PlaybackStatus({
             step={0.05}
             value={volume}
             onChange={(e) => onVolumeChange(parseFloat(e.target.value))}
-            className="w-full accent-yellow-400 cursor-pointer"
-            aria-label="Volume control"
+            className="w-full accent-[#C8960C] cursor-pointer"
+            aria-label="Volume"
           />
-          <span className="text-xs text-foreground/40 w-8 text-right">
+          <span className="label text-fg-3 w-8 text-right">
             {Math.round(volume * 100)}%
           </span>
         </div>
@@ -117,10 +112,10 @@ export function PlaybackStatus({
 
       {/* Earphone tip */}
       {isPlaying && (
-        <div className="flex items-center gap-2 text-xs text-foreground/35 border-t border-neon-yellow/10 pt-4 w-full justify-center">
-          <Headphones className="h-3.5 w-3.5" aria-hidden="true" />
-          <span>Plug in wired earphones for the best experience</span>
-        </div>
+        <p className="flex items-center gap-2 text-xs text-fg-3 border-t border-border pt-4">
+          <Headphones className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+          Wired earphones recommended for best audio quality
+        </p>
       )}
     </NeonCard>
   )

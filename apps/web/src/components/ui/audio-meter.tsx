@@ -1,104 +1,114 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { cn } from '@/lib/cn'
 
 interface AudioMeterProps {
   stream: MediaStream | null
+  active: boolean
   className?: string
-  barCount?: number
-  active?: boolean
 }
 
 /**
- * AudioMeter — real-time audio level visualizer using Web Audio API analyser.
- * Renders as animated vertical bars that respond to actual audio amplitude.
+ * AudioMeter — frequency bar visualizer using Web Audio API.
+ * Clean, flat amber bars on dark background.
+ * No glow, no decorative effects.
  */
-export function AudioMeter({
-  stream,
-  className,
-  barCount = 20,
-  active = false,
-}: AudioMeterProps) {
+export function AudioMeter({ stream, active, className }: AudioMeterProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animRef = useRef<number | null>(null)
-  const analyserRef = useRef<AnalyserNode | null>(null)
-  const ctxRef = useRef<AudioContext | null>(null)
+  const rafRef    = useRef<number>(0)
+  const ctxRef    = useRef<{ audio: AudioContext; analyser: AnalyserNode; source: MediaStreamAudioSourceNode } | null>(null)
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx2d = canvas.getContext('2d')
-    if (!ctx2d) return
-
-    // No stream — render idle bars
-    if (!stream || !active) {
-      const drawIdle = () => {
-        ctx2d.clearRect(0, 0, canvas.width, canvas.height)
-        const barW = canvas.width / barCount
-        const gap = 2
-        for (let i = 0; i < barCount; i++) {
-          const h = canvas.height * 0.08
-          ctx2d.fillStyle = 'rgba(255, 215, 0, 0.2)'
-          ctx2d.fillRect(i * barW + gap / 2, canvas.height - h, barW - gap, h)
-        }
-      }
+    if (!active || !stream) {
+      cancelAnimationFrame(rafRef.current)
+      ctxRef.current?.audio.close()
+      ctxRef.current = null
       drawIdle()
       return
     }
 
-    // Set up audio context and analyser
-    const audioCtx = new AudioContext()
-    const analyser = audioCtx.createAnalyser()
-    analyser.fftSize = 256
-    analyser.smoothingTimeConstant = 0.75
+    const audio    = new AudioContext()
+    const analyser = audio.createAnalyser()
+    analyser.fftSize = 64
+    analyser.smoothingTimeConstant = 0.8
 
-    const source = audioCtx.createMediaStreamSource(stream)
+    const source = audio.createMediaStreamSource(stream)
     source.connect(analyser)
+    ctxRef.current = { audio, analyser, source }
 
-    ctxRef.current = audioCtx
-    analyserRef.current = analyser
+    const data = new Uint8Array(analyser.frequencyBinCount)
 
-    const dataArray = new Uint8Array(analyser.frequencyBinCount)
+    function draw() {
+      const canvas = canvasRef.current
+      if (!canvas) return
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
 
-    const draw = () => {
-      animRef.current = requestAnimationFrame(draw)
-      analyser.getByteFrequencyData(dataArray)
+      analyser.getByteFrequencyData(data)
 
-      ctx2d.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      const barW = canvas.width / barCount
-      const gap = 2
-      const step = Math.floor(dataArray.length / barCount)
+      const barCount = Math.min(data.length, 24)
+      const gap      = 2
+      const barW     = (canvas.width - gap * (barCount - 1)) / barCount
 
       for (let i = 0; i < barCount; i++) {
-        const value = dataArray[i * step] ?? 0
-        const normalised = value / 255
-        const h = Math.max(canvas.height * 0.06, normalised * canvas.height)
+        const ratio  = data[i]! / 255
+        const barH   = Math.max(2, ratio * canvas.height)
+        const x      = i * (barW + gap)
+        const y      = canvas.height - barH
 
-        // Color gradient: dim yellow to bright neon
-        const alpha = 0.3 + normalised * 0.7
-        ctx2d.fillStyle = `rgba(255, 215, 0, ${alpha})`
-        ctx2d.fillRect(i * barW + gap / 2, canvas.height - h, barW - gap, h)
+        // Flat amber fill — no glow
+        const alpha = 0.35 + ratio * 0.65
+        ctx.fillStyle = `rgba(200, 150, 12, ${alpha})`
+        ctx.fillRect(Math.round(x), Math.round(y), Math.round(barW), Math.round(barH))
       }
+
+      rafRef.current = requestAnimationFrame(draw)
     }
 
     draw()
 
     return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current)
-      audioCtx.close().catch(() => {})
+      cancelAnimationFrame(rafRef.current)
+      audio.close()
+      ctxRef.current = null
     }
-  }, [stream, active, barCount])
+  }, [stream, active])
+
+  function drawIdle() {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    // Static low bars when idle
+    const barCount = 24
+    const gap  = 2
+    const barW = (canvas.width - gap * (barCount - 1)) / barCount
+    for (let i = 0; i < barCount; i++) {
+      const h = 2 + Math.sin(i * 0.9) * 2
+      ctx.fillStyle = 'rgba(255,255,255,0.06)'
+      ctx.fillRect(
+        Math.round(i * (barW + gap)),
+        Math.round(canvas.height - h),
+        Math.round(barW),
+        Math.round(h)
+      )
+    }
+  }
+
+  useEffect(() => { drawIdle() }, [])
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={300}
-      height={60}
-      className={cn('w-full h-16 rounded-sm', className)}
-      aria-label="Audio level meter"
-      aria-hidden="true"
-    />
+    <div className={cn('w-full', className)} aria-hidden="true">
+      <canvas
+        ref={canvasRef}
+        width={280}
+        height={40}
+        className="w-full h-10 block"
+      />
+    </div>
   )
 }

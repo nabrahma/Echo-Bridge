@@ -1,65 +1,58 @@
-import { Zap, Globe, Lock, Headphones } from 'lucide-react'
-import { NeonCard } from '@/components/ui/neon-card'
-
 const features = [
   {
-    icon: Zap,
-    title: 'Low Latency',
-    body: 'WebRTC peer-to-peer transport keeps audio delay near-zero. Built for movies, not podcasts.',
-    accent: 'text-neon-yellow',
+    id: 'no-install',
+    label: 'Zero setup',
+    title: 'No install.\nNo account.',
+    body: 'Both devices open a URL. That\'s it. Nothing to download, nothing to sign up for.',
   },
   {
-    icon: Globe,
-    title: 'Browser Native',
-    body: 'No downloads, no app store. Open a URL on both devices and you\'re paired in seconds.',
-    accent: 'text-neon-yellow',
+    id: 'p2p-audio',
+    label: 'Architecture',
+    title: 'Peer-to-peer\naudio.',
+    body: 'Audio travels directly between your devices over WebRTC. It never touches a server.',
   },
   {
-    icon: Lock,
-    title: 'Private by Default',
-    body: 'Audio travels directly between your devices. The signaling server never sees your stream.',
-    accent: 'text-neon-yellow',
+    id: 'wired-earphones',
+    label: 'Use case',
+    title: 'Wired earphones\non your phone.',
+    body: 'Plug any wired earphones into your phone. Listen to your laptop from across the room.',
   },
   {
-    icon: Headphones,
-    title: 'Wired Earphone Ready',
-    body: 'Designed specifically for plugging in wired earphones to your phone as a remote audio receiver.',
-    accent: 'text-neon-yellow',
+    id: 'qr-pairing',
+    label: 'Pairing',
+    title: 'QR or\nroom code.',
+    body: 'Scan a QR code with your camera or type a 6-character code. Either way takes under 10 seconds.',
   },
 ]
 
 export function FeatureCards() {
   return (
-    <section className="py-24 px-6" aria-label="Features">
-      <div className="mx-auto max-w-7xl">
-        {/* Section header */}
-        <div className="mb-16 text-center">
-          <p className="text-xs uppercase tracking-widest text-neon-yellow/60 mb-3">Why EchoBridge</p>
-          <h2 className="font-display text-5xl tracking-display text-foreground">
-            BUILT FOR ONE PURPOSE
-          </h2>
-        </div>
+    <section
+      className="mx-auto max-w-6xl px-6 py-20"
+      aria-labelledby="features-heading"
+    >
+      <div className="mb-12">
+        <p className="label text-fg-3 mb-3" id="features-heading">What it does</p>
+        <div className="divider w-12" />
+      </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {features.map((f, i) => {
-            const Icon = f.icon
-            return (
-              <NeonCard
-                key={f.title}
-                className="group hover:border-neon-yellow/40 transition-all duration-300"
-                style={{ animationDelay: `${i * 0.1}s` }}
-              >
-                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-sm border border-neon-yellow/20 bg-neon-yellow/5 group-hover:bg-neon-yellow/10 transition-all duration-200">
-                  <Icon className="h-5 w-5 text-neon-yellow" aria-hidden="true" />
-                </div>
-                <h3 className="font-display text-xl tracking-display text-neon-yellow mb-2">
-                  {f.title.toUpperCase()}
-                </h3>
-                <p className="text-sm text-foreground/60 leading-relaxed">{f.body}</p>
-              </NeonCard>
-            )
-          })}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border">
+        {features.map((f) => (
+          <article
+            key={f.id}
+            id={`feature-${f.id}`}
+            className="bg-background p-6 flex flex-col gap-4"
+          >
+            <p className="label text-fg-4">{f.label}</p>
+            <h3
+              className="font-display text-display-md text-foreground"
+              style={{ whiteSpace: 'pre-line' }}
+            >
+              {f.title}
+            </h3>
+            <p className="text-sm text-fg-2 leading-relaxed">{f.body}</p>
+          </article>
+        ))}
       </div>
     </section>
   )

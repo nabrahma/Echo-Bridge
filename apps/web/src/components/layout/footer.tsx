@@ -1,40 +1,48 @@
 import Link from 'next/link'
-import { Radio } from 'lucide-react'
 
 export function Footer() {
   return (
-    <footer className="border-t border-neon-yellow/10 py-8">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          {/* Brand */}
-          <Link href="/" className="flex items-center gap-2" aria-label="EchoBridge">
-            <Radio className="h-4 w-4 text-neon-yellow/60" aria-hidden="true" />
-            <span className="font-display text-lg tracking-display text-neon-yellow/60">
-              ECHOBRIDGE
-            </span>
-          </Link>
+    <footer
+      className="border-t border-border mt-20"
+      role="contentinfo"
+    >
+      <div className="mx-auto max-w-6xl px-6 py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 
-          {/* Tagline */}
-          <p className="text-xs text-foreground/30 uppercase tracking-wide text-center">
-            Browser-native audio relay · WebRTC · No accounts · No cloud
+        {/* Left */}
+        <div>
+          <p className="font-display text-base tracking-display text-foreground mb-1">
+            EchoBridge
           </p>
-
-          {/* Links */}
-          <div className="flex items-center gap-4">
-            <Link
-              href="/broadcast"
-              className="text-xs text-foreground/40 hover:text-foreground/70 uppercase tracking-wide transition-colors"
-            >
-              Broadcast
-            </Link>
-            <Link
-              href="/join"
-              className="text-xs text-foreground/40 hover:text-foreground/70 uppercase tracking-wide transition-colors"
-            >
-              Join
-            </Link>
-          </div>
+          <p className="text-sm text-fg-3">
+            Browser-native audio relay. No install. No accounts.
+          </p>
         </div>
+
+        {/* Right */}
+        <div className="flex items-center gap-5">
+          <Link
+            href="https://github.com/nabrahma/Echo-Bridge"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="label text-fg-3 hover:text-fg-2 transition-colors duration-150"
+            aria-label="View source on GitHub"
+          >
+            GitHub
+          </Link>
+          <Link
+            href="/broadcast"
+            className="label text-fg-3 hover:text-fg-2 transition-colors duration-150"
+          >
+            Broadcast
+          </Link>
+          <Link
+            href="/join"
+            className="label text-fg-3 hover:text-fg-2 transition-colors duration-150"
+          >
+            Join Room
+          </Link>
+        </div>
+
       </div>
     </footer>
   )

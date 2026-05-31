@@ -1,52 +1,53 @@
 import { cn } from '@/lib/cn'
 import type { ConnectionState } from '@echobridge/shared'
 
+type BadgeState =
+  | ConnectionState
+  | 'broadcasting'
+  | 'listening'
+  | 'idle'
+
 interface StatusBadgeProps {
-  state: ConnectionState | 'broadcasting' | 'listening'
+  state: BadgeState
   label?: string
   className?: string
-  showPulse?: boolean
 }
 
-const STATE_CONFIG: Record<
-  string,
-  { color: string; label: string; pulseClass: string }
-> = {
-  idle: { color: 'bg-gray-500', label: 'Idle', pulseClass: '' },
-  connecting: { color: 'bg-yellow-400', label: 'Connecting', pulseClass: 'animate-pulse' },
-  connected: { color: 'bg-green-500', label: 'Connected', pulseClass: 'animate-pulse-slow' },
-  reconnecting: { color: 'bg-yellow-500', label: 'Reconnecting', pulseClass: 'animate-pulse' },
-  disconnected: { color: 'bg-gray-500', label: 'Disconnected', pulseClass: '' },
-  error: { color: 'bg-red-500', label: 'Error', pulseClass: '' },
-  broadcasting: { color: 'bg-neon-yellow', label: 'Broadcasting', pulseClass: 'animate-pulse-slow' },
-  listening: { color: 'bg-green-400', label: 'Listening', pulseClass: 'animate-pulse-slow' },
+const stateConfig: Record<BadgeState, { dot: string; text: string; defaultLabel: string; pulse: boolean }> = {
+  idle:          { dot: 'bg-fg-4',         text: 'text-fg-3',   defaultLabel: 'Idle',         pulse: false },
+  connecting:    { dot: 'bg-warning/80',   text: 'text-fg-2',   defaultLabel: 'Connecting',   pulse: true  },
+  connected:     { dot: 'bg-success',      text: 'text-fg-2',   defaultLabel: 'Connected',    pulse: false },
+  broadcasting:  { dot: 'bg-accent',       text: 'text-fg-2',   defaultLabel: 'Broadcasting', pulse: true  },
+  listening:     { dot: 'bg-success',      text: 'text-fg-2',   defaultLabel: 'Listening',    pulse: false },
+  reconnecting:  { dot: 'bg-warning/80',   text: 'text-fg-2',   defaultLabel: 'Reconnecting', pulse: true  },
+  disconnected:  { dot: 'bg-fg-4',         text: 'text-fg-3',   defaultLabel: 'Disconnected', pulse: false },
+  error:         { dot: 'bg-error/80',     text: 'text-error/70', defaultLabel: 'Error',      pulse: false },
 }
 
 /**
- * StatusBadge — a pulse dot + uppercase label for connection/stream state.
+ * StatusBadge — minimal text + dot indicator. No borders, no background.
+ * Communicates state through color and text only.
  */
-export function StatusBadge({ state, label, className, showPulse = true }: StatusBadgeProps) {
-  const config = STATE_CONFIG[state] ?? STATE_CONFIG['idle']!
-  const displayLabel = label ?? config.label
+export function StatusBadge({ state, label, className }: StatusBadgeProps) {
+  const cfg = stateConfig[state] ?? stateConfig.idle
 
   return (
     <span
-      className={cn(
-        'inline-flex items-center gap-2 text-xs uppercase tracking-wide font-medium',
-        className
-      )}
+      className={cn('inline-flex items-center gap-1.5', className)}
       role="status"
-      aria-label={`Status: ${displayLabel}`}
+      aria-label={label ?? cfg.defaultLabel}
     >
       <span
         className={cn(
-          'relative h-2 w-2 rounded-full flex-shrink-0',
-          config.color,
-          showPulse && config.pulseClass
+          'status-dot',
+          cfg.dot,
+          cfg.pulse && 'animate-pulse-dot'
         )}
         aria-hidden="true"
       />
-      <span className="text-foreground/70">{displayLabel}</span>
+      <span className={cn('label', cfg.text)}>
+        {label ?? cfg.defaultLabel}
+      </span>
     </span>
   )
 }

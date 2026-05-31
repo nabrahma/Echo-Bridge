@@ -1,31 +1,33 @@
 import * as React from 'react'
 import { cn } from '@/lib/cn'
 
-interface NeonCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  glow?: boolean
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   active?: boolean
+  raised?: boolean
   noPadding?: boolean
 }
 
 /**
- * NeonCard — the primary surface in EchoBridge.
- * Thin yellow border, dark background, optional active glow state.
+ * Card — the primary surface. Flat dark, thin border, no glow.
+ * `active` applies an accent border only — no shadow, no glow.
  */
 export function NeonCard({
   className,
-  glow = false,
   active = false,
+  raised = false,
   noPadding = false,
   children,
+  // Ignore glow prop silently — glow is not part of the new design
   ...props
-}: NeonCardProps) {
+}: CardProps & { glow?: boolean }) {
   return (
     <div
       className={cn(
-        'relative rounded-sm border bg-[#0a0a0a] transition-all duration-300',
-        'border-neon-dim',
-        active && 'border-neon-active',
-        glow && 'shadow-neon',
+        'rounded-sm border transition-colors duration-150',
+        raised ? 'bg-surface-2' : 'bg-surface',
+        active
+          ? 'border-accent-border'
+          : 'border-border',
         !noPadding && 'p-6',
         className
       )}
@@ -37,7 +39,7 @@ export function NeonCard({
 }
 
 /**
- * NeonCardHeader — bold uppercase section heading inside a card
+ * NeonCardHeader — row layout for title + badge/status
  */
 export function NeonCardHeader({
   className,
@@ -45,14 +47,15 @@ export function NeonCardHeader({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn('mb-4 flex items-center justify-between', className)} {...props}>
+    <div className={cn('mb-5 flex items-center justify-between', className)} {...props}>
       {children}
     </div>
   )
 }
 
 /**
- * NeonCardTitle — card title styled for the brand
+ * NeonCardTitle — section heading inside a card.
+ * Uses Bebas Neue, uppercase, no color by default (white).
  */
 export function NeonCardTitle({
   className,
@@ -61,7 +64,7 @@ export function NeonCardTitle({
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={cn('font-display text-2xl tracking-display text-neon-yellow uppercase', className)}
+      className={cn('font-display text-xl tracking-display text-foreground uppercase', className)}
       {...props}
     >
       {children}

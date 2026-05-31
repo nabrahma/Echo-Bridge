@@ -1,56 +1,90 @@
 import * as React from 'react'
-import { Slot } from '@radix-ui/react-slot'
-import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
 
-const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-40 uppercase tracking-wide',
-  {
-    variants: {
-      variant: {
-        primary:
-          'bg-neon-yellow text-black hover:bg-yellow-300 active:scale-[0.98] shadow-neon hover:shadow-neon-lg font-semibold',
-        outline:
-          'border border-neon-yellow/40 text-neon-yellow bg-transparent hover:bg-neon-yellow/10 hover:border-neon-yellow/70 hover:shadow-neon-sm',
-        ghost:
-          'text-foreground/60 hover:text-foreground hover:bg-white/5',
-        danger:
-          'border border-red-500/40 text-red-400 bg-transparent hover:bg-red-500/10 hover:border-red-500/70',
-      },
-      size: {
-        sm: 'h-8 px-3 text-xs',
-        md: 'h-10 px-5 text-sm',
-        lg: 'h-12 px-8 text-base',
-        xl: 'h-14 px-10 text-lg',
-        icon: 'h-10 w-10',
-      },
-    },
-    defaultVariants: {
-      variant: 'primary',
-      size: 'md',
-    },
-  }
-)
+type ButtonVariant = 'primary' | 'outline' | 'ghost' | 'danger'
+type ButtonSize    = 'sm' | 'md' | 'lg'
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant
+  size?: ButtonSize
   asChild?: boolean
 }
 
+const variantClasses: Record<ButtonVariant, string> = {
+  // Primary — solid accent fill, dark text
+  primary: [
+    'bg-accent text-[#0A0A0A] font-semibold',
+    'hover:bg-[#D9A40E] active:bg-[#B8860B]',
+    'disabled:bg-fg-4 disabled:text-fg-3 disabled:cursor-not-allowed',
+  ].join(' '),
+
+  // Outline — transparent with border
+  outline: [
+    'bg-transparent border border-border-mid text-foreground',
+    'hover:border-border-strong hover:bg-surface-2',
+    'active:bg-surface-3',
+    'disabled:opacity-40 disabled:cursor-not-allowed',
+  ].join(' '),
+
+  // Ghost — no border, subtle hover
+  ghost: [
+    'bg-transparent text-fg-2',
+    'hover:bg-surface-2 hover:text-foreground',
+    'disabled:opacity-40 disabled:cursor-not-allowed',
+  ].join(' '),
+
+  // Danger — muted red
+  danger: [
+    'bg-[#1E0A0A] border border-error/30 text-error',
+    'hover:bg-[#2A0E0E] hover:border-error/50',
+    'disabled:opacity-40 disabled:cursor-not-allowed',
+  ].join(' '),
+}
+
+const sizeClasses: Record<ButtonSize, string> = {
+  sm: 'h-8  px-3 text-xs gap-1.5',
+  md: 'h-10 px-4 text-sm gap-2',
+  lg: 'h-11 px-5 text-sm gap-2',
+}
+
+/**
+ * Button — clean, flat, single-accent. No gradients, no glow.
+ */
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : 'button'
+  ({ className, variant = 'outline', size = 'md', asChild, children, ...props }, ref) => {
+    // asChild support: render the first child as the element
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(children as React.ReactElement<Record<string, unknown>>, {
+        className: cn(
+          'inline-flex items-center justify-center rounded-sm font-medium',
+          'transition-colors duration-150',
+          'select-none whitespace-nowrap',
+          variantClasses[variant],
+          sizeClasses[size],
+          className,
+          (children as React.ReactElement<{ className?: string }>).props.className
+        ),
+      })
+    }
+
     return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+      <button
         ref={ref}
+        className={cn(
+          'inline-flex items-center justify-center rounded-sm font-medium',
+          'transition-colors duration-150',
+          'select-none whitespace-nowrap',
+          variantClasses[variant],
+          sizeClasses[size],
+          className
+        )}
         {...props}
-      />
+      >
+        {children}
+      </button>
     )
   }
 )
 
 Button.displayName = 'Button'
-
-export { Button, buttonVariants }
+export { Button }

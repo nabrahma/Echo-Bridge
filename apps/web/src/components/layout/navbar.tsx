@@ -1,62 +1,75 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Radio } from 'lucide-react'
 import { cn } from '@/lib/cn'
-import { Button } from '@/components/ui/button'
 
 const navLinks = [
-  { href: '/', label: 'Home' },
+  { href: '/',          label: 'Home'      },
   { href: '/broadcast', label: 'Broadcast' },
-  { href: '/join', label: 'Join Room' },
+  { href: '/join',      label: 'Join Room' },
 ]
 
 export function Navbar() {
   const pathname = usePathname()
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-neon-yellow/10 bg-background/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        {/* Logo */}
+    <header
+      className="fixed top-0 left-0 right-0 z-50 h-14 border-b border-border bg-background"
+      role="banner"
+    >
+      <div className="mx-auto max-w-6xl px-6 h-full flex items-center justify-between">
+
+        {/* Wordmark */}
         <Link
           href="/"
-          className="flex items-center gap-3 group"
-          aria-label="EchoBridge Home"
+          className="font-display text-xl tracking-display text-foreground hover:text-accent transition-colors duration-150"
+          aria-label="EchoBridge — home"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-neon-yellow/40 bg-neon-yellow/10 group-hover:bg-neon-yellow/20 transition-all duration-200">
-            <Radio className="h-4 w-4 text-neon-yellow" aria-hidden="true" />
-          </div>
-          <span className="font-display text-2xl tracking-display text-neon-yellow">
-            ECHOBRIDGE
-          </span>
+          EchoBridge
         </Link>
 
-        {/* Nav links (desktop) */}
-        <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                'text-xs uppercase tracking-wide font-medium transition-colors duration-150 focus-neon',
-                pathname === link.href
-                  ? 'text-neon-yellow'
-                  : 'text-foreground/50 hover:text-foreground/90'
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
+        {/* Nav links — desktop */}
+        <nav aria-label="Main navigation" className="hidden md:flex items-center gap-6">
+          {navLinks.map(({ href, label }) => {
+            const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={cn(
+                  'label transition-colors duration-150',
+                  active ? 'text-foreground' : 'text-fg-3 hover:text-fg-2'
+                )}
+                aria-current={active ? 'page' : undefined}
+              >
+                {label}
+              </Link>
+            )
+          })}
         </nav>
 
-        {/* CTA */}
-        <div className="flex items-center gap-3">
-          <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
-            <Link href="/join">Join Room</Link>
-          </Button>
-          <Button asChild variant="primary" size="sm">
-            <Link href="/broadcast">Broadcast</Link>
-          </Button>
+        {/* Right actions */}
+        <div className="flex items-center gap-2">
+          <Link
+            href="/join"
+            id="nav-join-btn"
+            className={cn(
+              'label px-3 h-8 inline-flex items-center rounded-sm border transition-colors duration-150',
+              'border-border-mid text-fg-2 hover:border-border-strong hover:text-foreground'
+            )}
+          >
+            Join Room
+          </Link>
+          <Link
+            href="/broadcast"
+            id="nav-broadcast-btn"
+            className={cn(
+              'label px-3 h-8 inline-flex items-center rounded-sm transition-colors duration-150',
+              'bg-accent text-[#0A0A0A] font-semibold hover:bg-[#D9A40E]'
+            )}
+          >
+            Broadcast
+          </Link>
         </div>
       </div>
     </header>

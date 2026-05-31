@@ -9,82 +9,87 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        // Surfaces — true dark, no gradients
+        background: '#090909',
+        surface:    '#111111',
+        'surface-2': '#171717',
+        'surface-3': '#1E1E1E',
+
+        // Borders — structural, not decorative
+        border:         'rgba(255,255,255,0.07)',
+        'border-mid':   'rgba(255,255,255,0.12)',
+        'border-strong':'rgba(255,255,255,0.18)',
+
+        // Accent — single muted amber. Used sparingly.
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
+          DEFAULT:  '#C8960C',  // muted amber, not neon
+          dim:      '#7A5C00',
+          subtle:   'rgba(200,150,12,0.12)',
+          border:   'rgba(200,150,12,0.25)',
         },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        border: 'hsl(var(--border))',
-        surface: 'hsl(var(--surface))',
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
-        neon: {
-          yellow: '#FFD700',
-          amber: '#B8860B',
-          dim: 'rgba(255, 215, 0, 0.15)',
-        },
+
+        // Text — off-white hierarchy
+        foreground: '#EBEBEB',
+        'fg-2':     '#909090',
+        'fg-3':     '#555555',
+        'fg-4':     '#333333',
+
+        // Semantic — flat, no glow
+        success: '#3D9970',
+        warning: '#C8960C',
+        error:   '#C0392B',
+        info:    '#2980B9',
       },
+
       fontFamily: {
         display: ['var(--font-bebas)', 'sans-serif'],
-        sans: ['var(--font-inter)', 'sans-serif'],
+        sans:    ['var(--font-inter)', 'sans-serif'],
+        mono:    ['var(--font-mono)', 'monospace'],
       },
+
       letterSpacing: {
-        display: '0.08em',
-        wide: '0.15em',
-        widest: '0.25em',
+        display: '0.06em',
+        label:   '0.12em',
+        wide:    '0.18em',
       },
+
+      fontSize: {
+        'display-xl': ['clamp(3.5rem,9vw,7rem)',  { lineHeight: '0.95', letterSpacing: '0.06em' }],
+        'display-lg': ['clamp(2.5rem,6vw,4.5rem)',{ lineHeight: '1',    letterSpacing: '0.06em' }],
+        'display-md': ['clamp(1.8rem,4vw,2.8rem)',{ lineHeight: '1.05', letterSpacing: '0.06em' }],
+        label:        ['0.6875rem',               { lineHeight: '1',    letterSpacing: '0.12em' }],
+      },
+
       animation: {
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'glow-pulse': 'glowPulse 2s ease-in-out infinite alternate',
-        'scan-line': 'scanLine 8s linear infinite',
-        'fade-in': 'fadeIn 0.4s ease-out',
-        'slide-up': 'slideUp 0.5s ease-out',
-        'orb-float': 'orbFloat 6s ease-in-out infinite',
+        'fade-in':    'fadeIn 0.25s ease-out',
+        'slide-up':   'slideUp 0.3s ease-out',
+        'pulse-dot':  'pulseDot 2.5s ease-in-out infinite',
+        'conn-flow':  'connFlow 2s linear infinite',
       },
+
       keyframes: {
-        glowPulse: {
-          '0%': { opacity: '0.7', filter: 'blur(20px)' },
-          '100%': { opacity: '1', filter: 'blur(35px)' },
-        },
-        scanLine: {
-          '0%': { transform: 'translateY(-100%)' },
-          '100%': { transform: 'translateY(100vh)' },
-        },
         fadeIn: {
-          '0%': { opacity: '0' },
+          '0%':   { opacity: '0' },
           '100%': { opacity: '1' },
         },
         slideUp: {
-          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '0%':   { opacity: '0', transform: 'translateY(12px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        orbFloat: {
-          '0%, 100%': { transform: 'translateY(0px) scale(1)' },
-          '33%': { transform: 'translateY(-12px) scale(1.02)' },
-          '66%': { transform: 'translateY(-6px) scale(0.98)' },
+        pulseDot: {
+          '0%, 100%': { opacity: '1' },
+          '50%':      { opacity: '0.35' },
+        },
+        connFlow: {
+          '0%':   { strokeDashoffset: '100' },
+          '100%': { strokeDashoffset: '0' },
         },
       },
+
+      // Intentionally NO box shadows with glow
       boxShadow: {
-        'neon-sm': '0 0 10px rgba(255, 215, 0, 0.3)',
-        neon: '0 0 20px rgba(255, 215, 0, 0.4)',
-        'neon-lg': '0 0 40px rgba(255, 215, 0, 0.3), 0 0 80px rgba(255, 215, 0, 0.1)',
-        'neon-inner': 'inset 0 0 20px rgba(255, 215, 0, 0.05)',
-      },
-      backgroundImage: {
-        'cyber-grid':
-          "linear-gradient(rgba(255,215,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,215,0,0.04) 1px, transparent 1px)",
-        'radial-glow':
-          'radial-gradient(ellipse at center, rgba(255, 215, 0, 0.08) 0%, transparent 70%)',
-      },
-      backgroundSize: {
-        grid: '48px 48px',
+        card:    '0 1px 3px rgba(0,0,0,0.5)',
+        'card-raised': '0 4px 12px rgba(0,0,0,0.6)',
       },
     },
   },

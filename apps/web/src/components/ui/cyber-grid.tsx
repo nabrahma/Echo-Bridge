@@ -1,64 +1,12 @@
-import { cn } from '@/lib/cn'
-
-interface CyberGridProps {
-  className?: string
-  withNoise?: boolean
-  withGlow?: boolean
-}
-
 /**
- * CyberGrid — decorative background element with yellow grid lines and optional radial glow.
- * Used as an absolute-positioned overlay layer behind content.
+ * CyberGrid — removed per design PRD.
+ *
+ * Decorative grid backgrounds with glow are forbidden by the design system.
+ * Pages use a flat #090909 background. No grid, no gradient, no decoration.
+ *
+ * This file is kept as a no-op export so existing imports don't break
+ * while each page is migrated to remove the usage.
  */
-export function CyberGrid({ className, withNoise = false, withGlow = true }: CyberGridProps) {
-  return (
-    <div
-      className={cn('pointer-events-none absolute inset-0 overflow-hidden', className)}
-      aria-hidden="true"
-    >
-      {/* Grid lines */}
-      <div className="absolute inset-0 bg-cyber-grid bg-grid opacity-100" />
-
-      {/* Radial glow from center */}
-      {withGlow && (
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 215, 0, 0.06) 0%, transparent 70%)',
-          }}
-        />
-      )}
-
-      {/* Corner accents */}
-      <div
-        className="absolute top-0 left-0 w-16 h-16 opacity-30"
-        style={{
-          background:
-            'linear-gradient(135deg, rgba(255,215,0,0.15) 0%, transparent 60%)',
-        }}
-      />
-      <div
-        className="absolute top-0 right-0 w-16 h-16 opacity-30"
-        style={{
-          background:
-            'linear-gradient(225deg, rgba(255,215,0,0.15) 0%, transparent 60%)',
-        }}
-      />
-      <div
-        className="absolute bottom-0 left-0 w-16 h-16 opacity-30"
-        style={{
-          background:
-            'linear-gradient(45deg, rgba(255,215,0,0.15) 0%, transparent 60%)',
-        }}
-      />
-      <div
-        className="absolute bottom-0 right-0 w-16 h-16 opacity-30"
-        style={{
-          background:
-            'linear-gradient(315deg, rgba(255,215,0,0.15) 0%, transparent 60%)',
-        }}
-      />
-    </div>
-  )
+export function CyberGrid(_props: { withGlow?: boolean; className?: string }) {
+  return null
 }

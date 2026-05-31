@@ -1,80 +1,72 @@
-import { Monitor, QrCode, Headphones } from 'lucide-react'
-
 const steps = [
   {
     number: '01',
-    icon: Monitor,
-    title: 'Open on Laptop',
-    body: 'Visit EchoBridge on your laptop and click "Start Broadcasting." Select your audio source when prompted.',
+    device: 'Laptop',
+    action: 'Open /broadcast',
+    detail: 'A 6-character room code is generated and a QR code appears immediately.',
   },
   {
     number: '02',
-    icon: QrCode,
-    title: 'Pair Your Phone',
-    body: 'Scan the QR code shown on screen with your phone, or type in the 6-character room code manually.',
+    device: 'Phone',
+    action: 'Open /join',
+    detail: 'Scan the QR code or type the room code. Both devices pair over your local network.',
   },
   {
     number: '03',
-    icon: Headphones,
-    title: 'Plug In and Listen',
-    body: 'Plug your wired earphones into the phone. Audio streams instantly. Move anywhere in the room.',
+    device: 'Laptop',
+    action: 'Click Start Broadcast',
+    detail: 'Select your tab or window. Check "Share tab audio" when the browser prompts you.',
+  },
+  {
+    number: '04',
+    device: 'Phone',
+    action: 'Plug in earphones',
+    detail: 'Audio streams in real time. Volume is controlled on the phone.',
   },
 ]
 
 export function HowItWorks() {
   return (
-    <section className="py-24 px-6 border-t border-neon-yellow/10" aria-label="How it works">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-16 text-center">
-          <p className="text-xs uppercase tracking-widest text-neon-yellow/60 mb-3">Setup in seconds</p>
-          <h2 className="font-display text-5xl tracking-display text-foreground">
-            HOW IT WORKS
-          </h2>
-        </div>
+    <section
+      className="mx-auto max-w-6xl px-6 py-20 border-t border-border"
+      aria-labelledby="how-it-works-heading"
+    >
+      <div className="mb-12">
+        <p className="label text-fg-3 mb-3" id="how-it-works-heading">How it works</p>
+        <h2 className="font-display text-display-lg text-foreground">
+          Four steps.<br />Under a minute.
+        </h2>
+      </div>
 
-        <div className="relative">
-          {/* Connector line (desktop) */}
-          <div
-            className="absolute top-10 left-0 right-0 h-px hidden lg:block"
-            style={{
-              background:
-                'linear-gradient(90deg, transparent 5%, rgba(255,215,0,0.15) 20%, rgba(255,215,0,0.15) 80%, transparent 95%)',
-            }}
-            aria-hidden="true"
-          />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {steps.map((step) => (
+          <div key={step.number} className="flex flex-col gap-3">
+            {/* Step number */}
+            <div className="flex items-center gap-3 mb-1">
+              <span className="font-display text-3xl text-fg-4 leading-none">{step.number}</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {steps.map((step, i) => {
-              const Icon = step.icon
-              return (
-                <div key={step.number} className="relative flex flex-col items-center text-center lg:items-start lg:text-left">
-                  {/* Step indicator */}
-                  <div className="relative z-10 mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-neon-yellow/30 bg-background">
-                    <Icon className="h-8 w-8 text-neon-yellow" aria-hidden="true" />
-                    {/* Number badge */}
-                    <span
-                      className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full border border-neon-yellow/40 bg-neon-yellow text-black text-xs font-bold"
-                      aria-hidden="true"
-                    >
-                      {i + 1}
-                    </span>
-                  </div>
+            {/* Device label */}
+            <p className="label text-accent">{step.device}</p>
 
-                  <div className="font-display text-6xl tracking-display text-neon-yellow/10 mb-2 leading-none">
-                    {step.number}
-                  </div>
+            {/* Action */}
+            <p className="font-semibold text-foreground text-sm">{step.action}</p>
 
-                  <h3 className="font-display text-2xl tracking-display text-foreground mb-3">
-                    {step.title.toUpperCase()}
-                  </h3>
-                  <p className="text-sm text-foreground/55 leading-relaxed max-w-xs">
-                    {step.body}
-                  </p>
-                </div>
-              )
-            })}
+            {/* Detail */}
+            <p className="text-sm text-fg-2 leading-relaxed">{step.detail}</p>
           </div>
-        </div>
+        ))}
+      </div>
+
+      {/* Browser note */}
+      <div className="mt-16 pt-8 border-t border-border">
+        <p className="label text-fg-4 mb-3">Browser requirement</p>
+        <p className="text-sm text-fg-2 max-w-xl leading-relaxed">
+          System audio capture requires Chrome or Edge on desktop for the broadcaster.
+          The phone can use any modern browser — Chrome, Safari, Firefox.
+          Both devices must be on the same Wi-Fi network.
+        </p>
       </div>
     </section>
   )
